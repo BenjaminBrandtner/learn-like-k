@@ -15,13 +15,6 @@ onMounted(() => {
   }
 })
 
-function handleEnter() {
-  quizStore.handleEnterKey()
-}
-
-function handleInput() {
-  quizStore.checkAnswerRealtime()
-}
 
 function focusInput() {
   if (inputRef.value) {
@@ -31,175 +24,60 @@ function focusInput() {
 </script>
 
 <template>
-  <main class="container">
-    <h1>Learn Like K - Quiz</h1>
+  <div class="w-full flex justify-center">
+    <main class="w-full max-w-4xl p-5 min-h-screen flex flex-col">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Learn Like K - Quiz</h1>
     
-    <div v-if="!topicsStore.currentTopic" class="no-topic">
-      <p>No topic loaded. Please go to Settings to load a topic first.</p>
-      <router-link to="/settings" class="settings-link">Go to Settings</router-link>
+    <div v-if="!topicsStore.currentTopic" class="flex-1 flex flex-col justify-center items-center text-center">
+      <p class="text-gray-600 mb-5">No topic loaded. Please go to Settings to load a topic first.</p>
+      <router-link to="/settings" class="inline-block mt-5 px-5 py-2.5 bg-blue-500 text-white no-underline rounded hover:bg-blue-600 transition-colors">Go to Settings</router-link>
     </div>
 
-    <div v-else-if="topicsStore.getActiveQuestions().length === 0" class="no-questions">
-      <p>No question sets are enabled. Please go to Settings to enable some question sets.</p>
-      <router-link to="/settings" class="settings-link">Go to Settings</router-link>
+    <div v-else-if="topicsStore.getActiveQuestions().length === 0" class="flex-1 flex flex-col justify-center items-center text-center">
+      <p class="text-gray-600 mb-5">No question sets are enabled. Please go to Settings to enable some question sets.</p>
+      <router-link to="/settings" class="inline-block mt-5 px-5 py-2.5 bg-blue-500 text-white no-underline rounded hover:bg-blue-600 transition-colors">Go to Settings</router-link>
     </div>
 
-    <div v-else class="quiz-ready">
-      <div class="topic-info">
-        <h2>{{ topicsStore.currentTopic.name }}</h2>
-        <p>{{ topicsStore.getActiveQuestions().length }} questions ready</p>
+    <div v-else class="flex-1 flex flex-col">
+      <div class="text-center mb-12">
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ topicsStore.currentTopic.name }}</h2>
+        <p class="text-gray-600">{{ topicsStore.getActiveQuestions().length }} questions ready</p>
       </div>
       
       <div 
         v-if="quizStore.currentQuestion" 
-        class="quiz-area"
+        class="mt-4"
       >
-        <div class="question-display">
-          <div class="question">{{ quizStore.currentQuestion.question }}</div>
+        <div class="text-center mb-12">
+          <div class="text-5xl font-bold text-gray-800 p-7 bg-gray-50 rounded-xl border-2 border-gray-200">{{ quizStore.currentQuestion.question }}</div>
         </div>
         
-        <div class="answer-hint">
+        <div class="text-center mb-5 h-20 flex items-center justify-center">
           <div 
             v-if="quizStore.showingCorrectAnswer || quizStore.showingAnswerAfterEnter"
-            class="correct-answer-hint">
+            class="text-2xl font-bold px-5 py-4 rounded-lg text-red-600 bg-red-50 border-2 border-red-200">
             {{ quizStore.currentQuestion.answer }}
           </div>
         </div>
         
-        <div class="answer-section">
+        <div class="mb-7">
           <input 
             ref="inputRef"
             v-model="quizStore.userAnswer"
             type="text" 
-            class="answer-input"
-            @input="handleInput"
-            @keyup.enter="handleEnter"
+            class="w-full text-2xl px-5 py-4 border-2 border-gray-200 rounded-lg text-center outline-none transition-colors focus:border-blue-500"
+            @input="quizStore.checkAnswerRealtime"
+            @keyup.enter="quizStore.handleEnterKey"
           />
         </div>
         
-        <div v-if="quizStore.showingAnswerAfterEnter" class="next-prompt">
+        <div v-if="quizStore.showingAnswerAfterEnter" class="text-center text-gray-500 italic">
           Press Enter for next question
         </div>
       </div>
     </div>
 
     <BottomNav />
-  </main>
+    </main>
+  </div>
 </template>
-
-<style scoped>
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.no-topic, .no-questions {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.settings-link {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-}
-
-.settings-link:hover {
-  background-color: #2980b9;
-}
-
-.quiz-ready {
-  flex: 1;
-}
-
-.topic-info {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.topic-info h2 {
-  color: #2c3e50;
-  margin-bottom: 10px;
-}
-
-.quiz-area {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.question-display {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.question {
-  font-size: 3em;
-  font-weight: bold;
-  color: #2c3e50;
-  padding: 30px;
-  background-color: #f8f9fa;
-  border-radius: 12px;
-  border: 2px solid #dee2e6;
-}
-
-.answer-section {
-  margin-bottom: 30px;
-}
-
-.answer-input {
-  width: 100%;
-  font-size: 1.5em;
-  padding: 15px 20px;
-  border: 2px solid #dee2e6;
-  border-radius: 8px;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.answer-input:focus {
-  border-color: #3498db;
-}
-
-.answer-input:disabled {
-  background-color: #f8f9fa;
-  color: #6c757d;
-}
-
-.answer-hint {
-  text-align: center;
-  margin-bottom: 20px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.correct-answer-hint {
-  font-size: 1.5em;
-  font-weight: bold;
-  padding: 15px 20px;
-  border-radius: 8px;
-  color: #dc3545;
-  background-color: #f8d7da;
-  border: 2px solid #f5c6cb;
-}
-
-.next-prompt {
-  color: #6c757d;
-  font-style: italic;
-}
-
-</style>

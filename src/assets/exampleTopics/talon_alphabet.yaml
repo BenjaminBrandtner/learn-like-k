@@ -16,7 +16,7 @@ questions: # structure: "Question: Answer"
     - "j: jury"
   - # set 3
     - "k: crunch"
-    - "l: look"
+    - "L: look"
     - "m: made"
     - "n: near"
     - "o: odd"

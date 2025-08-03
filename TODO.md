@@ -1,5 +1,10 @@
 # TODO
 
+### Tailwind CSS Migration
+
+- Convert SettingsView.vue to use Tailwind CSS classes
+- Convert AboutView.vue to use Tailwind CSS classes
+
 ### Set Toggles on Quiz Page
 
 - Add quick toggle buttons on quiz page to enable/disable question sets without going to settings
