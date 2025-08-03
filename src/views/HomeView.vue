@@ -44,7 +44,6 @@ function selectPredefinedTopic(event: Event) {
   const selectedTopic = predefinedTopics.value.find(topic => topic.name === target.value)
   if (selectedTopic) {
     topicsStore.yamlText = selectedTopic.content
-    topicsStore.loadFromYaml(selectedTopic.content)
   }
 }
 </script>
@@ -58,7 +57,7 @@ function selectPredefinedTopic(event: Event) {
     </div>
 
     <div class="form-group">
-      <label for="yaml-input">YAML Content:</label>
+      <label for="yaml-input">Define Topic YAML:</label>
       <textarea 
         id="yaml-input"
         v-model="topicsStore.yamlText"
@@ -68,21 +67,25 @@ function selectPredefinedTopic(event: Event) {
       ></textarea>
     </div>
 
-    <button @click="loadYaml" class="load-button">Load YAML</button>
-
-    <div v-if="topicsStore.loadError" class="error">
-      Error: {{ topicsStore.loadError }}
-    </div>
-
     <div class="predefined-section">
-      <label for="predefined-topics">Predefined Topics:</label>
+      <label for="predefined-topics">Or select a predefined topic:</label>
       <select id="predefined-topics" @change="selectPredefinedTopic">
-        <option value="">Select a predefined topic...</option>
+        <option value="">None selected</option>
         <option v-for="topic in predefinedTopics" :key="topic.name" :value="topic.name">
           {{ topic.name }}
         </option>
       </select>
     </div>
+
+    <div class="button-group">
+      <button @click="loadYaml" class="load-button">Load Topic</button>
+      <button @click="topicsStore.clearTopic" class="clear-button">Clear Topic</button>
+    </div>
+
+    <div v-if="topicsStore.loadError" class="error">
+      Error: {{ topicsStore.loadError }}
+    </div>
+
 
     <div v-if="topicsStore.currentTopic" class="topic-info">
       <h3>Topic Information</h3>
@@ -94,7 +97,13 @@ function selectPredefinedTopic(event: Event) {
     </div>
 
     <div v-if="topicsStore.currentTopic" class="question-sets">
-      <h3>Question Sets</h3>
+      <div class="sets-header">
+        <h3>Question Sets</h3>
+        <div class="sets-actions">
+          <button @click="topicsStore.selectAllSets" class="select-all-button">Select All</button>
+          <button @click="topicsStore.deselectAllSets" class="deselect-all-button">Deselect All</button>
+        </div>
+      </div>
       <table class="sets-table">
         <thead>
           <tr>
@@ -174,19 +183,36 @@ textarea {
   font-size: 14px;
 }
 
-.load-button {
-  background-color: #3498db;
-  color: white;
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.load-button, .clear-button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  margin-bottom: 15px;
+}
+
+.load-button {
+  background-color: #3498db;
+  color: white;
 }
 
 .load-button:hover {
   background-color: #2980b9;
+}
+
+.clear-button {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.clear-button:hover {
+  background-color: #c0392b;
 }
 
 .error {
@@ -233,9 +259,47 @@ select {
   border-left: 4px solid #28a745;
 }
 
+.sets-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .question-sets h3 {
-  margin-top: 0;
+  margin: 0;
   color: #2c3e50;
+}
+
+.sets-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.select-all-button, .deselect-all-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.select-all-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.select-all-button:hover {
+  background-color: #218838;
+}
+
+.deselect-all-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.deselect-all-button:hover {
+  background-color: #5a6268;
 }
 
 .sets-table {
