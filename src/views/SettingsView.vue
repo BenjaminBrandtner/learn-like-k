@@ -47,6 +47,17 @@ function selectPredefinedTopic(event: Event) {
     topicsStore.yamlText = selectedTopic.content
   }
 }
+
+function formatDescription(description: string): string {
+  // Convert line breaks to HTML <br> tags
+  let formatted = description.replace(/\n/g, '<br>')
+  
+  // Convert URLs to clickable links with Tailwind styling
+  const urlRegex = /(https?:\/\/[^\s<>]+)/g
+  formatted = formatted.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">$1</a>')
+  
+  return formatted
+}
 </script>
 
 <template>
@@ -91,7 +102,7 @@ function selectPredefinedTopic(event: Event) {
     <div v-if="topicsStore.currentTopic" class="topic-info">
       <h3>Topic Information</h3>
       <p><strong>Name:</strong> {{ topicsStore.currentTopic.name }}</p>
-      <p v-if="topicsStore.currentTopic.description"><strong>Description:</strong> {{ topicsStore.currentTopic.description }}</p>
+      <p v-if="topicsStore.currentTopic.description"><strong>Description:</strong> <span v-html="formatDescription(topicsStore.currentTopic.description)"></span></p>
       <p><strong>Mode:</strong> {{ topicsStore.currentTopic.mode }}</p>
       <p><strong>Question Sets:</strong> {{ topicsStore.currentTopic.questions.length }}</p>
       <p><strong>Active Questions:</strong> {{ topicsStore.getActiveQuestions().length }}</p>

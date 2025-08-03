@@ -1,5 +1,7 @@
 name: "Talon Alphabet"
-description: "The Talon community-defined alphabet"
+description: "Talon is a hands-free input system that uses voice commands for controlling computers:  https://talonvoice.com
+
+This is the alphabet used in the popular Talon community project: https://github.com/talonhub/community"
 mode: "predefined-sets"
 questions: # structure: "Question: Answer"
   - # set 1

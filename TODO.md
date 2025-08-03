@@ -32,3 +32,5 @@
 ### Show Instructions on First Visit
 
 - Display helpful instructions when user first visits the quiz page (0 questions answered)
+
+### Morse Code Mode
