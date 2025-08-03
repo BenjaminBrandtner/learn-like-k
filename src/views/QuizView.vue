@@ -1,8 +1,40 @@
 <script setup lang="ts">
+import { ref, onMounted, nextTick } from 'vue'
 import { useTopicsStore } from '../stores/topics'
+import { useQuizStore } from '../stores/quiz'
 import BottomNav from '../components/BottomNav.vue'
 
 const topicsStore = useTopicsStore()
+const quizStore = useQuizStore()
+const inputRef = ref<HTMLInputElement>()
+const quizAreaRef = ref<HTMLDivElement>()
+
+onMounted(() => {
+  if (topicsStore.currentTopic && topicsStore.getActiveQuestions().length > 0) {
+    quizStore.startNewQuestion()
+    focusInput()
+  }
+})
+
+async function handleEnter() {
+  quizStore.nextQuestion()
+  await nextTick()
+  focusInput()
+}
+
+function focusInput() {
+  if (quizStore.showingAnswer) {
+    // When showing answer, focus the quiz area so it can receive enter key
+    if (quizAreaRef.value) {
+      quizAreaRef.value.focus()
+    }
+  } else {
+    // When asking question, focus the input
+    if (inputRef.value) {
+      inputRef.value.focus()
+    }
+  }
+}
 </script>
 
 <template>
@@ -25,8 +57,36 @@ const topicsStore = useTopicsStore()
         <p>{{ topicsStore.getActiveQuestions().length }} questions ready</p>
       </div>
       
-      <div class="quiz-placeholder">
-        <p>Quiz implementation coming soon...</p>
+      <div 
+        v-if="quizStore.currentQuestion" 
+        ref="quizAreaRef"
+        class="quiz-area"
+        @keyup.enter="handleEnter"
+        tabindex="0"
+      >
+        <div class="question-display">
+          <div class="question">{{ quizStore.currentQuestion.question }}</div>
+        </div>
+        
+        <div class="answer-section">
+          <input 
+            ref="inputRef"
+            v-model="quizStore.userAnswer"
+            type="text" 
+            class="answer-input"
+            placeholder="Type your answer and press Enter"
+            :disabled="quizStore.showingAnswer"
+          />
+        </div>
+        
+        <div v-if="quizStore.showingAnswer" class="answer-feedback">
+          <div 
+            :class="['correct-answer', quizStore.lastAnswerCorrect ? 'correct' : 'incorrect']"
+          >
+            {{ quizStore.currentQuestion.answer }}
+          </div>
+          <div class="next-prompt">Press Enter for next question</div>
+        </div>
       </div>
     </div>
 
@@ -81,12 +141,78 @@ const topicsStore = useTopicsStore()
   margin-bottom: 10px;
 }
 
-.quiz-placeholder {
+.quiz-area {
+  max-width: 600px;
+  margin: 0 auto;
+  outline: none;
+}
+
+.question-display {
   text-align: center;
-  padding: 50px;
+  margin-bottom: 40px;
+}
+
+.question {
+  font-size: 3em;
+  font-weight: bold;
+  color: #2c3e50;
+  padding: 30px;
   background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid #dee2e6;
+}
+
+.answer-section {
+  margin-bottom: 30px;
+}
+
+.answer-input {
+  width: 100%;
+  font-size: 1.5em;
+  padding: 15px 20px;
+  border: 2px solid #dee2e6;
   border-radius: 8px;
-  border: 2px dashed #dee2e6;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.answer-input:focus {
+  border-color: #3498db;
+}
+
+.answer-input:disabled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+.answer-feedback {
+  text-align: center;
+}
+
+.correct-answer {
+  font-size: 2em;
+  font-weight: bold;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.correct-answer.correct {
+  color: #28a745;
+  background-color: #d4edda;
+  border: 2px solid #c3e6cb;
+}
+
+.correct-answer.incorrect {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 2px solid #f5c6cb;
+}
+
+.next-prompt {
+  color: #6c757d;
+  font-style: italic;
 }
 
 </style>

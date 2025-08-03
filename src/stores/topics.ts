@@ -145,6 +145,7 @@ export const useTopicsStore = defineStore('topics', () => {
     deselectAllSets,
     getActiveQuestions,
     getParsedQuestionSets,
+    parseQuestionAnswer,
     clearTopic 
   }
 })
