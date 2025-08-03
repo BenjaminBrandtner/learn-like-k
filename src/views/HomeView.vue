@@ -1,17 +1,35 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useTopicsStore } from '../stores/counter'
+import { useTopicsStore } from '../stores/topics.ts'
 
 const topicsStore = useTopicsStore()
 const predefinedTopics = ref<Array<{name: string, content: string}>>([])
 
 onMounted(async () => {
-  // Load predefined topics
+  // Load all predefined topics using Vite's import.meta.glob
   try {
-    const talonAlphabet = await import('../assets/exampleTopics/talon_alphabet.yaml?raw')
-    predefinedTopics.value = [
-      { name: 'Talon Alphabet', content: talonAlphabet.default }
-    ]
+    const topicModules = import.meta.glob('../assets/exampleTopics/*.yaml', { 
+      query: '?raw',
+      eager: true 
+    })
+    
+    const topics = []
+    for (const [path, module] of Object.entries(topicModules)) {
+      const filename = path.split('/').pop()?.replace('.yaml', '') || 'Unknown'
+      const content = (module as { default: string }).default
+      
+      // Try to extract the topic name from the YAML content
+      try {
+        const nameMatch = content.match(/^name:\s*["']?([^"'\n\r]+)["']?/m)
+        const displayName = nameMatch ? nameMatch[1] : filename
+        topics.push({ name: displayName, content })
+      } catch {
+        // Fallback to filename if YAML parsing fails
+        topics.push({ name: filename, content })
+      }
+    }
+    
+    predefinedTopics.value = topics
   } catch (error) {
     console.error('Failed to load predefined topics:', error)
   }
