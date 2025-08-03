@@ -6,7 +6,7 @@ import BottomNav from '../components/BottomNav.vue'
   <main class="container">
     <div class="about">
       <h1>About Learn Like K</h1>
-      <p>A simple rote memorization learning tool inspired by Japanese kana learning applications.</p>
+      <p>A simple rote memorization learning tool inspired by Japanese kana learning applications, specifically <a href="https://kenrick95.github.io/itazuraneko/learn/kana.html" target="_blank" rel="noopener">Itazuraneko's kana learning tool</a>.</p>
       
       <div class="features">
         <h2>Features</h2>

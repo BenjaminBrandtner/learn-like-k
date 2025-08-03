@@ -7,7 +7,6 @@ import BottomNav from '../components/BottomNav.vue'
 const topicsStore = useTopicsStore()
 const quizStore = useQuizStore()
 const inputRef = ref<HTMLInputElement>()
-const quizAreaRef = ref<HTMLDivElement>()
 
 onMounted(() => {
   if (topicsStore.currentTopic && topicsStore.getActiveQuestions().length > 0) {
@@ -16,23 +15,17 @@ onMounted(() => {
   }
 })
 
-async function handleEnter() {
-  quizStore.nextQuestion()
-  await nextTick()
-  focusInput()
+function handleEnter() {
+  quizStore.handleEnterKey()
+}
+
+function handleInput() {
+  quizStore.checkAnswerRealtime()
 }
 
 function focusInput() {
-  if (quizStore.showingAnswer) {
-    // When showing answer, focus the quiz area so it can receive enter key
-    if (quizAreaRef.value) {
-      quizAreaRef.value.focus()
-    }
-  } else {
-    // When asking question, focus the input
-    if (inputRef.value) {
-      inputRef.value.focus()
-    }
+  if (inputRef.value) {
+    inputRef.value.focus()
   }
 }
 </script>
@@ -59,13 +52,18 @@ function focusInput() {
       
       <div 
         v-if="quizStore.currentQuestion" 
-        ref="quizAreaRef"
         class="quiz-area"
-        @keyup.enter="handleEnter"
-        tabindex="0"
       >
         <div class="question-display">
           <div class="question">{{ quizStore.currentQuestion.question }}</div>
+        </div>
+        
+        <div class="answer-hint">
+          <div 
+            v-if="quizStore.showingCorrectAnswer || quizStore.showingAnswerAfterEnter"
+            class="correct-answer-hint">
+            {{ quizStore.currentQuestion.answer }}
+          </div>
         </div>
         
         <div class="answer-section">
@@ -74,18 +72,13 @@ function focusInput() {
             v-model="quizStore.userAnswer"
             type="text" 
             class="answer-input"
-            placeholder="Type your answer and press Enter"
-            :disabled="quizStore.showingAnswer"
+            @input="handleInput"
+            @keyup.enter="handleEnter"
           />
         </div>
         
-        <div v-if="quizStore.showingAnswer" class="answer-feedback">
-          <div 
-            :class="['correct-answer', quizStore.lastAnswerCorrect ? 'correct' : 'incorrect']"
-          >
-            {{ quizStore.currentQuestion.answer }}
-          </div>
-          <div class="next-prompt">Press Enter for next question</div>
+        <div v-if="quizStore.showingAnswerAfterEnter" class="next-prompt">
+          Press Enter for next question
         </div>
       </div>
     </div>
@@ -144,7 +137,6 @@ function focusInput() {
 .quiz-area {
   max-width: 600px;
   margin: 0 auto;
-  outline: none;
 }
 
 .question-display {
@@ -186,25 +178,20 @@ function focusInput() {
   color: #6c757d;
 }
 
-.answer-feedback {
+.answer-hint {
   text-align: center;
+  margin-bottom: 20px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.correct-answer {
-  font-size: 2em;
+.correct-answer-hint {
+  font-size: 1.5em;
   font-weight: bold;
-  padding: 20px;
+  padding: 15px 20px;
   border-radius: 8px;
-  margin-bottom: 15px;
-}
-
-.correct-answer.correct {
-  color: #28a745;
-  background-color: #d4edda;
-  border: 2px solid #c3e6cb;
-}
-
-.correct-answer.incorrect {
   color: #dc3545;
   background-color: #f8d7da;
   border: 2px solid #f5c6cb;
