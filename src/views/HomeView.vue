@@ -90,6 +90,53 @@ function selectPredefinedTopic(event: Event) {
       <p v-if="topicsStore.currentTopic.description"><strong>Description:</strong> {{ topicsStore.currentTopic.description }}</p>
       <p><strong>Mode:</strong> {{ topicsStore.currentTopic.mode }}</p>
       <p><strong>Question Sets:</strong> {{ topicsStore.currentTopic.questions.length }}</p>
+      <p><strong>Active Questions:</strong> {{ topicsStore.getActiveQuestions().length }}</p>
+    </div>
+
+    <div v-if="topicsStore.currentTopic" class="question-sets">
+      <h3>Question Sets</h3>
+      <table class="sets-table">
+        <thead>
+          <tr>
+            <th class="toggle-col">Enable</th>
+            <th class="set-col">Set</th>
+            <th class="questions-col">Questions → Answers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            v-for="(set, index) in topicsStore.getParsedQuestionSets()" 
+            :key="index"
+            :class="{ 'disabled-set': !topicsStore.enabledSets[index] }"
+            class="set-row"
+            @click="topicsStore.toggleSet(index)"
+          >
+            <td class="toggle-cell">
+              <input 
+                type="checkbox" 
+                :checked="topicsStore.enabledSets[index]"
+                @change="topicsStore.toggleSet(index)"
+                @click.stop
+              />
+            </td>
+            <td class="set-cell">
+              <strong>Set {{ index + 1 }}</strong>
+              <div class="set-count">{{ set.length }} questions</div>
+            </td>
+            <td class="questions-cell">
+              <div class="question-pairs">
+                <span 
+                  v-for="(qa, qaIndex) in set" 
+                  :key="qaIndex" 
+                  class="question-pair"
+                >
+                  <strong>{{ qa.question }}</strong> → {{ qa.answer }}
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </main>
 </template>
@@ -176,5 +223,105 @@ select {
 
 .topic-info p {
   margin: 5px 0;
+}
+
+.question-sets {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 4px solid #28a745;
+}
+
+.question-sets h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.sets-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sets-table th {
+  background-color: #e9ecef;
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  color: #2c3e50;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.sets-table td {
+  padding: 12px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.set-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.set-row:hover {
+  background-color: #f8f9fa;
+}
+
+.toggle-col {
+  width: 80px;
+}
+
+.set-col {
+  width: 120px;
+}
+
+.questions-col {
+  width: auto;
+}
+
+.toggle-cell {
+  text-align: center;
+}
+
+.toggle-cell input[type="checkbox"] {
+  transform: scale(1.3);
+}
+
+.set-cell {
+  font-weight: bold;
+}
+
+.set-count {
+  font-size: 0.85em;
+  color: #666;
+  font-weight: normal;
+  margin-top: 4px;
+}
+
+.question-pairs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.question-pair {
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  border: 1px solid #e9ecef;
+}
+
+.disabled-set {
+  opacity: 0.6;
+}
+
+.disabled-set .question-pair {
+  background: #f5f5f5;
+  color: #999;
 }
 </style>
