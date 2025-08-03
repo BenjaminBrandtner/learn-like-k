@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useTopicsStore } from '../stores/topics.ts'
+import BottomNav from '../components/BottomNav.vue'
 
 const topicsStore = useTopicsStore()
 const predefinedTopics = ref<Array<{name: string, content: string}>>([])
@@ -50,7 +51,7 @@ function selectPredefinedTopic(event: Event) {
 
 <template>
   <main class="container">
-    <h1>Learn Like K - YAML Topic Loader</h1>
+    <h1>Learn Like K - Settings</h1>
     
     <div v-if="topicsStore.currentTopic" class="topic-name">
       Current Topic: {{ topicsStore.currentTopic.name }}
@@ -147,6 +148,8 @@ function selectPredefinedTopic(event: Event) {
         </tbody>
       </table>
     </div>
+
+    <BottomNav />
   </main>
 </template>
 
@@ -155,6 +158,9 @@ function selectPredefinedTopic(event: Event) {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .topic-name {
@@ -388,4 +394,5 @@ select {
   background: #f5f5f5;
   color: #999;
 }
+
 </style>
