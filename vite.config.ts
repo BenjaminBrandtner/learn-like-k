@@ -18,4 +18,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  define: {
+    __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString())
+  },
+  envPrefix: ['VITE_', 'GITHUB_'],
 })
