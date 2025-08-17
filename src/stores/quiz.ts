@@ -7,20 +7,49 @@ export const useQuizStore = defineStore('quiz', () => {
   const userAnswer = ref('')
   const showingCorrectAnswer = ref(false)
   const showingAnswerAfterEnter = ref(false)
+  
+  // Question frequency tracking for equal distribution
+  const questionUsageCount = ref<Map<string, number>>(new Map())
 
-  function getRandomQuestion(): Question | null {
+  function getQuestionKey(question: Question): string {
+    return `${question.question}:${question.answer}`
+  }
+
+  function getSmartQuestion(): Question | null {
     const topicsStore = useTopicsStore()
     const activeQuestions = topicsStore.getActiveQuestions()
     
     if (activeQuestions.length === 0) return null
+    if (activeQuestions.length === 1) return activeQuestions[0]
     
-    const randomIndex = Math.floor(Math.random() * activeQuestions.length)
-    return activeQuestions[randomIndex]
+    // Create pool of questions excluding the current one shown
+    const availableQuestions = activeQuestions.filter(q => 
+      !currentQuestion.value || getQuestionKey(q) !== getQuestionKey(currentQuestion.value)
+    )
+    
+    // Find the minimum usage count among available questions
+    const minUsageCount = Math.min(
+      ...availableQuestions.map(q => questionUsageCount.value.get(getQuestionKey(q)) || 0)
+    )
+    
+    // Get all questions at the minimum usage level
+    const leastUsedQuestions = availableQuestions.filter(q => 
+      (questionUsageCount.value.get(getQuestionKey(q)) || 0) === minUsageCount
+    )
+    
+    // Random selection from least used questions
+    const randomIndex = Math.floor(Math.random() * leastUsedQuestions.length)
+    return leastUsedQuestions[randomIndex]
   }
 
   function startNewQuestion() {
-    const question = getRandomQuestion()
+    const question = getSmartQuestion()
     if (question) {
+      // Update usage tracking
+      const key = getQuestionKey(question)
+      const currentCount = questionUsageCount.value.get(key) || 0
+      questionUsageCount.value.set(key, currentCount + 1)
+      
       currentQuestion.value = question
       userAnswer.value = ''
       showingCorrectAnswer.value = false
@@ -41,9 +70,12 @@ export const useQuizStore = defineStore('quiz', () => {
     )
   }
 
+  // Function is called when changing which questions are enabled
   function validateCurrentQuestion() {
     const topicsStore = useTopicsStore()
     const activeQuestions = topicsStore.getActiveQuestions()
+    
+    resetUsageTracking()
     
     // If no sets are active, clear current question
     if (activeQuestions.length === 0) {
@@ -102,11 +134,16 @@ export const useQuizStore = defineStore('quiz', () => {
     }
   }
 
+  function resetUsageTracking() {
+    questionUsageCount.value.clear()
+  }
+
   function resetQuiz() {
     currentQuestion.value = null
     userAnswer.value = ''
     showingCorrectAnswer.value = false
     showingAnswerAfterEnter.value = false
+    resetUsageTracking()
   }
 
   return {
@@ -118,6 +155,8 @@ export const useQuizStore = defineStore('quiz', () => {
     checkAnswerRealtime,
     handleEnterKey,
     resetQuiz,
-    validateCurrentQuestion
+    resetUsageTracking,
+    validateCurrentQuestion,
+    questionUsageCount: questionUsageCount.value
   }
 })

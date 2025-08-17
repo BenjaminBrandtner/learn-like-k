@@ -2,17 +2,6 @@
 
 ## New Features
 
-### Github Pages
-
-- Add a link to the github repo to the about page for people who want to contribute
-- add a "last deployed at" to the about page, to see when the last deployment from github pages was
-
-
-### Next Question algorithm overhaul
-
-- Don't show the same question twice in a row
-- Make sure each selected question appears roughly equally
-
 ### Settings Page Visual Overhaul
 
 - Improve layout and styling of the settings page
