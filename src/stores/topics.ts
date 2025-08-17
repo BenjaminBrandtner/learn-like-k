@@ -2,6 +2,11 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import yaml from 'js-yaml'
 
+export interface Question {
+  question: string
+  answer: string
+}
+
 export interface Topic {
   name: string
   description?: string
@@ -99,13 +104,14 @@ export const useTopicsStore = defineStore('topics', () => {
     }
   }
 
-  function getActiveQuestions() {
+  function getActiveQuestions(): Question[] {
     if (!currentTopic.value) return []
     
-    const activeQuestions: string[] = []
+    const activeQuestions: Question[] = []
     currentTopic.value.questions.forEach((set, index) => {
       if (enabledSets.value[index]) {
-        activeQuestions.push(...set)
+        const parsedSet = set.map(questionString => parseQuestionAnswer(questionString))
+        activeQuestions.push(...parsedSet)
       }
     })
     return activeQuestions
@@ -145,7 +151,6 @@ export const useTopicsStore = defineStore('topics', () => {
     deselectAllSets,
     getActiveQuestions,
     getParsedQuestionSets,
-    parseQuestionAnswer,
     clearTopic 
   }
 })

@@ -1,28 +1,21 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { useTopicsStore } from './topics'
-
-export interface QuizQuestion {
-  question: string
-  answer: string
-}
+import { useTopicsStore, type Question } from './topics'
 
 export const useQuizStore = defineStore('quiz', () => {
-  const currentQuestion = ref<QuizQuestion | null>(null)
+  const currentQuestion = ref<Question | null>(null)
   const userAnswer = ref('')
   const showingCorrectAnswer = ref(false)
   const showingAnswerAfterEnter = ref(false)
 
-  function getRandomQuestion(): QuizQuestion | null {
+  function getRandomQuestion(): Question | null {
     const topicsStore = useTopicsStore()
     const activeQuestions = topicsStore.getActiveQuestions()
     
     if (activeQuestions.length === 0) return null
     
     const randomIndex = Math.floor(Math.random() * activeQuestions.length)
-    const questionString = activeQuestions[randomIndex]
-    
-    return topicsStore.parseQuestionAnswer(questionString)
+    return activeQuestions[randomIndex]
   }
 
   function startNewQuestion() {
@@ -42,11 +35,10 @@ export const useQuizStore = defineStore('quiz', () => {
     const activeQuestions = topicsStore.getActiveQuestions()
     
     // Check if current question exists in active questions
-    return activeQuestions.some(questionString => {
-      const parsed = topicsStore.parseQuestionAnswer(questionString)
-      return parsed.question === currentQuestion.value?.question && 
-             parsed.answer === currentQuestion.value?.answer
-    })
+    return activeQuestions.some(question => 
+      question.question === currentQuestion.value?.question && 
+      question.answer === currentQuestion.value?.answer
+    )
   }
 
   function validateCurrentQuestion() {

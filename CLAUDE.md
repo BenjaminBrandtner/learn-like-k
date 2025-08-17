@@ -62,5 +62,5 @@ specifically https://kenrick95.github.io/itazuraneko/learn/kana.html).
 ### Commit Guidelines
 
 - Use concise commit messages focusing only on key functionality changes
-- Avoid mentioning minor details like file renames unless significant
-- Format: Short summary line preferred
+- Format: Short summary line preferred, only list the most important things as bullet points or don't list anything at all if the summary line is enough
+- Don't mention "generated with claude"
