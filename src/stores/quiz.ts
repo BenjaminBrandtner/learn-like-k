@@ -147,5 +147,6 @@ export const useQuizStore = defineStore('quiz', () => {
     checkAnswerRealtime,
     handleEnterKey,
     validateCurrentQuestion,
+    questionUsageCount
   }
 })
