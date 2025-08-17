@@ -138,14 +138,6 @@ export const useQuizStore = defineStore('quiz', () => {
     questionUsageCount.value.clear()
   }
 
-  function resetQuiz() {
-    currentQuestion.value = null
-    userAnswer.value = ''
-    showingCorrectAnswer.value = false
-    showingAnswerAfterEnter.value = false
-    resetUsageTracking()
-  }
-
   return {
     currentQuestion,
     userAnswer,
@@ -154,9 +146,6 @@ export const useQuizStore = defineStore('quiz', () => {
     startNewQuestion,
     checkAnswerRealtime,
     handleEnterKey,
-    resetQuiz,
-    resetUsageTracking,
     validateCurrentQuestion,
-    questionUsageCount: questionUsageCount.value
   }
 })
