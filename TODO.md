@@ -1,13 +1,12 @@
 # TODO
 
-### Tailwind CSS Migration
+## New Features
 
-- Convert SettingsView.vue to use Tailwind CSS classes
-- Convert AboutView.vue to use Tailwind CSS classes
+### Github Pages
 
-### Set Toggles on Quiz Page
+- Add a link to the github repo to the about page for people who want to contribute
+- add a "last deployed at" to the about page, to see when the last deployment from github pages was
 
-- Add quick toggle buttons on quiz page to enable/disable question sets without going to settings
 
 ### Next Question algorithm overhaul
 

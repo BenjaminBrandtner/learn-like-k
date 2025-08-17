@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useTopicsStore } from '../stores/topics.ts'
 import BottomNav from '../components/BottomNav.vue'
+import QuestionSetsTable from '../components/QuestionSetsTable.vue'
 
 const topicsStore = useTopicsStore()
 const predefinedTopics = ref<Array<{name: string, content: string}>>([])
@@ -105,63 +106,11 @@ function formatDescription(description: string): string {
       <p class="my-1"><strong>Name:</strong> {{ topicsStore.currentTopic.name }}</p>
       <p v-if="topicsStore.currentTopic.description" class="my-1"><strong>Description:</strong> <span v-html="formatDescription(topicsStore.currentTopic.description)"></span></p>
       <p class="my-1"><strong>Mode:</strong> {{ topicsStore.currentTopic.mode }}</p>
-      <p class="my-1"><strong>Question Sets:</strong> {{ topicsStore.currentTopic.questions.length }}</p>
+      <p class="my-1"><strong>Questions:</strong> {{ topicsStore.currentTopic.questions.length }}</p>
       <p class="my-1"><strong>Active Questions:</strong> {{ topicsStore.getActiveQuestions().length }}</p>
     </div>
 
-    <div v-if="topicsStore.currentTopic" class="mt-5 p-4 bg-slate-50 rounded border-l-4 border-green-500">
-      <div class="flex justify-between items-center mb-2.5">
-        <h3 class="m-0 text-slate-800 font-bold">Question Sets</h3>
-        <div class="flex gap-2">
-          <button @click="topicsStore.selectAllSets" class="px-3 py-1.5 border-none rounded cursor-pointer text-sm bg-green-500 text-white hover:bg-green-600">Select All</button>
-          <button @click="topicsStore.deselectAllSets" class="px-3 py-1.5 border-none rounded cursor-pointer text-sm bg-gray-500 text-white hover:bg-gray-600">Deselect All</button>
-        </div>
-      </div>
-      <table class="w-full border-collapse mt-2.5 bg-white rounded overflow-hidden">
-        <thead>
-          <tr>
-            <th class="w-20 bg-gray-200 px-3 py-3 text-left font-bold text-slate-800 border-b-2 border-gray-300">Enable</th>
-            <th class="w-30 bg-gray-200 px-3 py-3 text-left font-bold text-slate-800 border-b-2 border-gray-300">Set</th>
-            <th class="w-auto bg-gray-200 px-3 py-3 text-left font-bold text-slate-800 border-b-2 border-gray-300">Questions → Answers</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr 
-            v-for="(set, index) in topicsStore.getParsedQuestionSets()" 
-            :key="index"
-            :class="{ 'opacity-60': !topicsStore.enabledSets[index] }"
-            class="cursor-pointer transition-colors duration-200 hover:bg-slate-50"
-            @click="topicsStore.toggleSet(index)"
-          >
-            <td class="px-3 py-3 border-b border-gray-300 align-top text-center">
-              <input 
-                type="checkbox" 
-                :checked="topicsStore.enabledSets[index]"
-                @change="topicsStore.toggleSet(index)"
-                @click.stop
-                class="scale-125"
-              />
-            </td>
-            <td class="px-3 py-3 border-b border-gray-300 align-top font-bold">
-              <strong>Set {{ index + 1 }}</strong>
-              <div class="text-sm text-gray-600 font-normal mt-1">{{ set.length }} questions</div>
-            </td>
-            <td class="px-3 py-3 border-b border-gray-300 align-top">
-              <div class="flex flex-wrap gap-2">
-                <span 
-                  v-for="(qa, qaIndex) in set" 
-                  :key="qaIndex" 
-                  class="bg-slate-50 px-2 py-1 rounded text-sm border border-gray-200"
-                  :class="{ '!bg-gray-100 !text-gray-500': !topicsStore.enabledSets[index] }"
-                >
-                  <strong>{{ qa.question }}</strong> → {{ qa.answer }}
-                </span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <QuestionSetsTable class="mt-5" />
 
     <BottomNav />
   </main>

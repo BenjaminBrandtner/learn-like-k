@@ -35,6 +35,45 @@ export const useQuizStore = defineStore('quiz', () => {
     }
   }
 
+  function isCurrentQuestionFromActiveSet(): boolean {
+    if (!currentQuestion.value) return false
+    
+    const topicsStore = useTopicsStore()
+    const activeQuestions = topicsStore.getActiveQuestions()
+    
+    // Check if current question exists in active questions
+    return activeQuestions.some(questionString => {
+      const parsed = topicsStore.parseQuestionAnswer(questionString)
+      return parsed.question === currentQuestion.value?.question && 
+             parsed.answer === currentQuestion.value?.answer
+    })
+  }
+
+  function validateCurrentQuestion() {
+    const topicsStore = useTopicsStore()
+    const activeQuestions = topicsStore.getActiveQuestions()
+    
+    // If no sets are active, clear current question
+    if (activeQuestions.length === 0) {
+      currentQuestion.value = null
+      userAnswer.value = ''
+      showingCorrectAnswer.value = false
+      showingAnswerAfterEnter.value = false
+      return
+    }
+    
+    // If no current question but we have active questions, start a new one
+    if (!currentQuestion.value) {
+      startNewQuestion()
+      return
+    }
+    
+    // If current question is from a deselected set, generate a new one
+    if (!isCurrentQuestionFromActiveSet()) {
+      startNewQuestion()
+    }
+  }
+
   function checkAnswerRealtime() {
     if (!currentQuestion.value) return
     
@@ -86,6 +125,7 @@ export const useQuizStore = defineStore('quiz', () => {
     startNewQuestion,
     checkAnswerRealtime,
     handleEnterKey,
-    resetQuiz
+    resetQuiz,
+    validateCurrentQuestion
   }
 })
