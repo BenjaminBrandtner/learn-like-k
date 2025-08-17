@@ -1,3 +1,15 @@
+## Instructions for Claude
+
+- Use context7 MCP whenever applicable
+- If necessary, ask clarifying questions before starting implementation
+
+### Commit Guidelines
+
+- When committing: NEVER use default Claude Code commit format. Always follow the following commit guidelines:
+- Use concise commit messages focusing only on key functionality changes
+- Format: Short summary line preferred, only list the most important things as bullet points or don't list anything at all if the summary line is enough
+- Don't mention "generated with claude"
+
 ## Project Overview
 
 Learn Like K - A rote memorization web application inspired by Japanese kana learning tools (
@@ -54,13 +66,3 @@ specifically https://kenrick95.github.io/itazuraneko/learn/kana.html).
 - Use import.meta.glob for loading assets in static builds
 - YAML format: questions as arrays of "question: answer" strings
 - All state persisted to localStorage with 'learn-like-k-' prefix
-
-## Instructions for Claude
-
-- Use context7 MCP whenever applicable
-
-### Commit Guidelines
-
-- Use concise commit messages focusing only on key functionality changes
-- Format: Short summary line preferred, only list the most important things as bullet points or don't list anything at all if the summary line is enough
-- Don't mention "generated with claude"
