@@ -61,27 +61,28 @@ function formatDescription(description: string): string {
 </script>
 
 <template>
-  <main class="container">
-    <h1>Learn Like K - Settings</h1>
+  <main class="max-w-4xl mx-auto px-5 min-h-screen flex flex-col">
+    <h1 class="text-2xl font-bold mb-5 text-slate-800">Learn Like K - Settings</h1>
     
-    <div v-if="topicsStore.currentTopic" class="topic-name">
+    <div v-if="topicsStore.currentTopic" class="text-xl font-bold mb-5 text-slate-600">
       Current Topic: {{ topicsStore.currentTopic.name }}
     </div>
 
-    <div class="form-group">
-      <label for="yaml-input">Define Topic YAML:</label>
+    <div class="mb-4">
+      <label for="yaml-input" class="block mb-1 font-bold">Define Topic YAML:</label>
       <textarea 
         id="yaml-input"
         v-model="topicsStore.yamlText"
         placeholder="Paste your YAML content here..."
         rows="15"
         cols="80"
+        class="w-full p-2.5 border border-gray-300 rounded font-mono text-sm"
       ></textarea>
     </div>
 
-    <div class="predefined-section">
-      <label for="predefined-topics">Or select a predefined topic:</label>
-      <select id="predefined-topics" @change="selectPredefinedTopic">
+    <div class="mb-5">
+      <label for="predefined-topics" class="block mb-1 font-bold">Or select a predefined topic:</label>
+      <select id="predefined-topics" @change="selectPredefinedTopic" class="w-full p-2 border border-gray-300 rounded text-sm">
         <option value="">None selected</option>
         <option v-for="topic in predefinedTopics" :key="topic.name" :value="topic.name">
           {{ topic.name }}
@@ -89,67 +90,69 @@ function formatDescription(description: string): string {
       </select>
     </div>
 
-    <div class="button-group">
-      <button @click="loadYaml" class="load-button">Load Topic</button>
-      <button @click="topicsStore.clearTopic" class="clear-button">Clear Topic</button>
+    <div class="flex gap-2.5 mb-4">
+      <button @click="loadYaml" class="px-5 py-2.5 border-none rounded cursor-pointer text-base bg-blue-500 text-white hover:bg-blue-600">Load Topic</button>
+      <button @click="topicsStore.clearTopic" class="px-5 py-2.5 border-none rounded cursor-pointer text-base bg-red-500 text-white hover:bg-red-600">Clear Topic</button>
     </div>
 
-    <div v-if="topicsStore.loadError" class="error">
+    <div v-if="topicsStore.loadError" class="text-red-500 bg-red-50 p-2.5 rounded mb-4">
       Error: {{ topicsStore.loadError }}
     </div>
 
 
-    <div v-if="topicsStore.currentTopic" class="topic-info">
-      <h3>Topic Information</h3>
-      <p><strong>Name:</strong> {{ topicsStore.currentTopic.name }}</p>
-      <p v-if="topicsStore.currentTopic.description"><strong>Description:</strong> <span v-html="formatDescription(topicsStore.currentTopic.description)"></span></p>
-      <p><strong>Mode:</strong> {{ topicsStore.currentTopic.mode }}</p>
-      <p><strong>Question Sets:</strong> {{ topicsStore.currentTopic.questions.length }}</p>
-      <p><strong>Active Questions:</strong> {{ topicsStore.getActiveQuestions().length }}</p>
+    <div v-if="topicsStore.currentTopic" class="bg-slate-50 p-4 rounded border-l-4 border-blue-500">
+      <h3 class="mt-0 text-slate-800 font-bold mb-2">Topic Information</h3>
+      <p class="my-1"><strong>Name:</strong> {{ topicsStore.currentTopic.name }}</p>
+      <p v-if="topicsStore.currentTopic.description" class="my-1"><strong>Description:</strong> <span v-html="formatDescription(topicsStore.currentTopic.description)"></span></p>
+      <p class="my-1"><strong>Mode:</strong> {{ topicsStore.currentTopic.mode }}</p>
+      <p class="my-1"><strong>Question Sets:</strong> {{ topicsStore.currentTopic.questions.length }}</p>
+      <p class="my-1"><strong>Active Questions:</strong> {{ topicsStore.getActiveQuestions().length }}</p>
     </div>
 
-    <div v-if="topicsStore.currentTopic" class="question-sets">
-      <div class="sets-header">
-        <h3>Question Sets</h3>
-        <div class="sets-actions">
-          <button @click="topicsStore.selectAllSets" class="select-all-button">Select All</button>
-          <button @click="topicsStore.deselectAllSets" class="deselect-all-button">Deselect All</button>
+    <div v-if="topicsStore.currentTopic" class="mt-5 p-4 bg-slate-50 rounded border-l-4 border-green-500">
+      <div class="flex justify-between items-center mb-2.5">
+        <h3 class="m-0 text-slate-800 font-bold">Question Sets</h3>
+        <div class="flex gap-2">
+          <button @click="topicsStore.selectAllSets" class="px-3 py-1.5 border-none rounded cursor-pointer text-sm bg-green-500 text-white hover:bg-green-600">Select All</button>
+          <button @click="topicsStore.deselectAllSets" class="px-3 py-1.5 border-none rounded cursor-pointer text-sm bg-gray-500 text-white hover:bg-gray-600">Deselect All</button>
         </div>
       </div>
-      <table class="sets-table">
+      <table class="w-full border-collapse mt-2.5 bg-white rounded overflow-hidden">
         <thead>
           <tr>
-            <th class="toggle-col">Enable</th>
-            <th class="set-col">Set</th>
-            <th class="questions-col">Questions → Answers</th>
+            <th class="w-20 bg-gray-200 px-3 py-3 text-left font-bold text-slate-800 border-b-2 border-gray-300">Enable</th>
+            <th class="w-30 bg-gray-200 px-3 py-3 text-left font-bold text-slate-800 border-b-2 border-gray-300">Set</th>
+            <th class="w-auto bg-gray-200 px-3 py-3 text-left font-bold text-slate-800 border-b-2 border-gray-300">Questions → Answers</th>
           </tr>
         </thead>
         <tbody>
           <tr 
             v-for="(set, index) in topicsStore.getParsedQuestionSets()" 
             :key="index"
-            :class="{ 'disabled-set': !topicsStore.enabledSets[index] }"
-            class="set-row"
+            :class="{ 'opacity-60': !topicsStore.enabledSets[index] }"
+            class="cursor-pointer transition-colors duration-200 hover:bg-slate-50"
             @click="topicsStore.toggleSet(index)"
           >
-            <td class="toggle-cell">
+            <td class="px-3 py-3 border-b border-gray-300 align-top text-center">
               <input 
                 type="checkbox" 
                 :checked="topicsStore.enabledSets[index]"
                 @change="topicsStore.toggleSet(index)"
                 @click.stop
+                class="scale-125"
               />
             </td>
-            <td class="set-cell">
+            <td class="px-3 py-3 border-b border-gray-300 align-top font-bold">
               <strong>Set {{ index + 1 }}</strong>
-              <div class="set-count">{{ set.length }} questions</div>
+              <div class="text-sm text-gray-600 font-normal mt-1">{{ set.length }} questions</div>
             </td>
-            <td class="questions-cell">
-              <div class="question-pairs">
+            <td class="px-3 py-3 border-b border-gray-300 align-top">
+              <div class="flex flex-wrap gap-2">
                 <span 
                   v-for="(qa, qaIndex) in set" 
                   :key="qaIndex" 
-                  class="question-pair"
+                  class="bg-slate-50 px-2 py-1 rounded text-sm border border-gray-200"
+                  :class="{ '!bg-gray-100 !text-gray-500': !topicsStore.enabledSets[index] }"
                 >
                   <strong>{{ qa.question }}</strong> → {{ qa.answer }}
                 </span>
@@ -164,246 +167,3 @@ function formatDescription(description: string): string {
   </main>
 </template>
 
-<style scoped>
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.topic-name {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #2c3e50;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 14px;
-}
-
-.button-group {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.load-button, .clear-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.load-button {
-  background-color: #3498db;
-  color: white;
-}
-
-.load-button:hover {
-  background-color: #2980b9;
-}
-
-.clear-button {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.clear-button:hover {
-  background-color: #c0392b;
-}
-
-.error {
-  color: #e74c3c;
-  background-color: #fdf2f2;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-}
-
-.predefined-section {
-  margin-bottom: 20px;
-}
-
-select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.topic-info {
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-radius: 4px;
-  border-left: 4px solid #3498db;
-}
-
-.topic-info h3 {
-  margin-top: 0;
-  color: #2c3e50;
-}
-
-.topic-info p {
-  margin: 5px 0;
-}
-
-.question-sets {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  border-left: 4px solid #28a745;
-}
-
-.sets-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.question-sets h3 {
-  margin: 0;
-  color: #2c3e50;
-}
-
-.sets-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.select-all-button, .deselect-all-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.select-all-button {
-  background-color: #28a745;
-  color: white;
-}
-
-.select-all-button:hover {
-  background-color: #218838;
-}
-
-.deselect-all-button {
-  background-color: #6c757d;
-  color: white;
-}
-
-.deselect-all-button:hover {
-  background-color: #5a6268;
-}
-
-.sets-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: white;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.sets-table th {
-  background-color: #e9ecef;
-  padding: 12px;
-  text-align: left;
-  font-weight: bold;
-  color: #2c3e50;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.sets-table td {
-  padding: 12px;
-  border-bottom: 1px solid #dee2e6;
-  vertical-align: top;
-}
-
-.set-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.set-row:hover {
-  background-color: #f8f9fa;
-}
-
-.toggle-col {
-  width: 80px;
-}
-
-.set-col {
-  width: 120px;
-}
-
-.questions-col {
-  width: auto;
-}
-
-.toggle-cell {
-  text-align: center;
-}
-
-.toggle-cell input[type="checkbox"] {
-  transform: scale(1.3);
-}
-
-.set-cell {
-  font-weight: bold;
-}
-
-.set-count {
-  font-size: 0.85em;
-  color: #666;
-  font-weight: normal;
-  margin-top: 4px;
-}
-
-.question-pairs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.question-pair {
-  background: #f8f9fa;
-  padding: 4px 8px;
-  border-radius: 3px;
-  font-size: 0.9em;
-  border: 1px solid #e9ecef;
-}
-
-.disabled-set {
-  opacity: 0.6;
-}
-
-.disabled-set .question-pair {
-  background: #f5f5f5;
-  color: #999;
-}
-
-</style>
